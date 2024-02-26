@@ -1,0 +1,3 @@
+API key for TMDB - 
+
+bfd6d0dce5037d1d11913bc10363d885
