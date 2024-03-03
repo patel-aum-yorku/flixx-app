@@ -4,8 +4,16 @@ const global =  {
     currentPage : window.location.pathname
 };
 
-// Init app 
+// HighLight Active link
+/**
+ * This function will change the color of the
+ * selected link.
+ */
+function highLightActiveLink(){
+    const navLinks = document.querySelectorAll()
+}
 
+// Init app 
 function init() {
     switch(global.currentPage) {
         case '/':
