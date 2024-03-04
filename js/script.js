@@ -4,9 +4,56 @@ const global =  {
     currentPage : window.location.pathname
 };
 
+/**
+ * This function makes API call to TMDB using fetchAPIData() function
+ * and then create a html div containing tv show card to display on the home
+ * route. Also we extracted the data from the returned object from the API call.
+ */
+
+async function displayPopularTVShows() {
+    const {results} = await fetchAPIData('tv/popular');
+    //console.log(results);
+
+    results.forEach((tv)=>{
+        const div = document.createElement('div');
+        div.classList.add('card');
+        div.innerHTML = `
+        <a href="tv-details.html?id=${tv.id}">
+        ${// here we check that if there is a tv show poster path then display it if not then display stock image.
+            tv.poster_path
+            ?
+            ` <img
+            src="https://image.tmdb.org/t/p/w500${tv.poster_path}"
+            class="card-img-top"
+            alt="${tv.name}"
+          />` 
+            :
+          ` <img
+          src="images/no-image.jpg"
+          class="card-img-top"
+          alt="${tv.name}"
+        />`
+        }
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">${tv.name}</h5>
+            <p class="card-text">
+              <small class="text-muted">Aired: ${tv.first_air_date}</small>
+            </p>
+          </div>
+        `
+        document.querySelector('#popular-shows').appendChild(div);
+    });
+}
+
+/**
+ * This function makes API call to TMDB using fetchAPIData() function
+ * and then create a html div containing movie card to display on the home
+ * route. Also we extracted the data from the returned object from the API call.
+ */
 async function displayPopularMovies(){
     const {results} = await fetchAPIData('movie/popular');
-    console.log(results);
+    //console.log(results);
     results.forEach((movie)=>{
         const div = document.createElement('div');
         div.classList.add('card');
@@ -62,6 +109,7 @@ async function fetchAPIData(endpoint){
 }
 
 
+
 // HighLight Active link
 /**
  * This function will change the color of the
@@ -86,6 +134,7 @@ function init() {
             console.log('Home');
             break;
         case '/shows.html':
+            displayPopularTVShows();
             console.log('shows');
             break;
         case '/movie-details.html':
