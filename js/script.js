@@ -10,7 +10,12 @@ const global =  {
  * selected link.
  */
 function highLightActiveLink(){
-    const navLinks = document.querySelectorAll()
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach((link)=>{
+        if(link.getAttribute('href')===global.currentPage){
+            link.classList.add('active');
+        }
+    })
 }
 
 // Init app 
@@ -34,6 +39,7 @@ function init() {
             break;
 
     }
+    highLightActiveLink();
 }
 
 document.addEventListener('DOMContentLoaded', init);
