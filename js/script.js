@@ -96,6 +96,11 @@ async function displayMovieDetails(){
     const movieID = window.location.search;// getting ID from search bar on the top.
     // the movieID has the id in the format '?id=12345' we need to extract it from the string.
     // we can either slice the string after 4 chars or we can use split method which splits at '=' & return an array 
+    const movie_id  = movieID.slice(4);
+    console.log(movie_id);
+    const results = await fetchAPIData(`movie/${movie_id}`);
+    console.log(results);
+    
 }
 
 // Fretch data from the TMDB 
