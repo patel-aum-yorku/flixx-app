@@ -102,13 +102,27 @@ async function fetchAPIData(endpoint){
     const API_KEY = 'bfd6d0dce5037d1d11913bc10363d885'; 
     const API_URL = 'https://api.themoviedb.org/3/'; // append the required string at the end to make approprate request.
 
+    // adding the spinning effect
+    showSpinner();
+
     const response = await fetch(`${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US`);
     const data = await response.json();
+
+    //removing the spinning effect
+    hideSpinner();
 
     return data;
 }
 
-
+/**
+ * This funtion displays the spinner effect.
+ */
+function showSpinner(){
+    document.querySelector('.spinner').classList.add('show');
+}
+function hideSpinner(){
+    document.querySelector('.spinner').classList.remove('show');
+}
 
 // HighLight Active link
 /**
