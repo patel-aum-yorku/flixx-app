@@ -86,6 +86,18 @@ async function displayPopularMovies(){
     });
 }
 
+/**
+ * This fucntion displays movie details. 
+ * 
+ * It get the movie ID from the top search bar. 
+ *
+ */
+async function displayMovieDetails(){
+    const movieID = window.location.search;// getting ID from search bar on the top.
+    // the movieID has the id in the format '?id=12345' we need to extract it from the string.
+    // we can either slice the string after 4 chars or we can use split method which splits at '=' & return an array 
+}
+
 // Fretch data from the TMDB 
 /**
  * If this was a production website we should not keep the key here
@@ -152,6 +164,7 @@ function init() {
             console.log('shows');
             break;
         case '/movie-details.html':
+            displayMovieDetails();
             console.log('movie-details');
             break;
         case '/tv-details.html':
