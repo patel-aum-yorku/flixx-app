@@ -1,5 +1,5 @@
 let player;
 
-function onYouTubeIframeAPIReady(){
-    
+export function onYouTubeIframeAPIReady(){
+    console.log('api readfy')
 }
