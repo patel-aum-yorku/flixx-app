@@ -4,12 +4,20 @@ const global =  {
     currentPage : window.location.pathname
 };
 
+function getId(){
+  const id = window.location.search;// getting ID from search bar on the top.
+  // the movieID has the id in the format '?id=12345' we need to extract it from the string.
+  // we can either slice the string after 4 chars or we can use split method which splits at '=' & return an array 
+  return id.slice(4);
+}
+
+
 /**
  * This function makes API call to TMDB using fetchAPIData() function
  * and then create a html div containing tv show card to display on the home
  * route. Also we extracted the data from the returned object from the API call.
  */
-
+// used innerHTML to for DOM manipulation.
 async function displayPopularTVShows() {
     const {results} = await fetchAPIData('tv/popular');
     //console.log(results);
@@ -51,6 +59,7 @@ async function displayPopularTVShows() {
  * and then create a html div containing movie card to display on the home
  * route. Also we extracted the data from the returned object from the API call.
  */
+//used innerHTML for DOM manipulation
 async function displayPopularMovies(){
     const {results} = await fetchAPIData('movie/popular');
     //console.log(results);
@@ -93,14 +102,72 @@ async function displayPopularMovies(){
  *
  */
 async function displayMovieDetails(){
-    const movieID = window.location.search;// getting ID from search bar on the top.
-    // the movieID has the id in the format '?id=12345' we need to extract it from the string.
-    // we can either slice the string after 4 chars or we can use split method which splits at '=' & return an array 
-    const movie_id  = movieID.slice(4);
-    console.log(movie_id);
-    const results = await fetchAPIData(`movie/${movie_id}`);
-    console.log(results);
+    const movie_id = getId() ;
+    const movieDetails = await fetchAPIData(`movie/${movie_id}`);
+    console.log(movieDetails);
+    //updating the html tags
+    // Update HTML elements with movie details
+    const movieDetailsContainer = document.getElementById('movie-details');
+
+    // Update image source
+    const posterImage = movieDetails.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
+        : 'images/no-image.jpg';
+    movieDetailsContainer.querySelector('.card-img-top').src = posterImage;
+
+    // Update title
+    movieDetailsContainer.querySelector('h2').textContent = movieDetails.title;
+
+    // Update release date
+    movieDetailsContainer.querySelector('.text-muted').textContent = `Release Date: ${movieDetails.release_date}`;
+
+    // Update overview
+    movieDetailsContainer.querySelector('p:last-of-type').textContent = movieDetails.overview;
+
+    // Update genres
+    const genresList = movieDetailsContainer.querySelector('.list-group');
+    genresList.innerHTML = ''; // Clear existing genres
+    movieDetails.genres.forEach((genre) => {
+        const li = document.createElement('li');
+        li.textContent = genre.name;
+        genresList.appendChild(li);
+    });
+
+    // Update movie homepage link (if available)
+    const homepageLink = movieDetailsContainer.querySelector('.btn');
+    if (movieDetails.homepage) {
+        homepageLink.href = movieDetails.homepage;
+    } else {
+        homepageLink.style.display = 'none'; // Hide the link if homepage is not available
+    }
+
+    // Update budget, revenue, runtime, status
+    const detailsBottom = movieDetailsContainer.querySelector('.details-bottom');
+    detailsBottom.querySelector('li:nth-child(1)').textContent = `Budget: $${movieDetails.budget.toLocaleString()}`;
+    detailsBottom.querySelector('li:nth-child(2)').textContent = `Revenue: $${movieDetails.revenue.toLocaleString()}`;
+    detailsBottom.querySelector('li:nth-child(3)').textContent = `Runtime: ${movieDetails.runtime} minutes`;
+    detailsBottom.querySelector('li:nth-child(4)').textContent = `Status: ${movieDetails.status}`;
+
+    // Update production companies
+    const productionCompanies = movieDetailsContainer.querySelector('.list-group2');
+    productionCompanies.textContent = ''; // Clear existing production companies
+    movieDetails.production_companies.forEach((company) => {
+        const div = document.createElement('div');
+
+        div.textContent = company.name;
+        productionCompanies.appendChild(div);
+    });
     
+}
+
+// tv show details 
+/**
+ * This function displays tv show details 
+ * 
+ */
+async function displayShowDetails() {
+  show_id = getId();
+  console.log(show_id);
 }
 
 // Fretch data from the TMDB 
@@ -173,6 +240,7 @@ function init() {
             console.log('movie-details');
             break;
         case '/tv-details.html':
+            displayShowDetails();
             console.log('tv-details');
             break;
         case '/search.html':
