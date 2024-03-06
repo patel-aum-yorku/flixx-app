@@ -117,6 +117,10 @@ async function displayMovieDetails(){
 
     // Update title
     movieDetailsContainer.querySelector('h2').textContent = movieDetails.title;
+    
+    // update ratings
+    movieDetailsContainer.querySelector('p').innerHTML = ` <i class="fas fa-star text-primary"></i>
+    ${movieDetails.vote_average.toFixed(1)} / 10`;
 
     // Update release date
     movieDetailsContainer.querySelector('.text-muted').textContent = `Release Date: ${movieDetails.release_date}`;
@@ -136,7 +140,7 @@ async function displayMovieDetails(){
     // Update movie homepage link (if available)
     const homepageLink = movieDetailsContainer.querySelector('.btn');
     if (movieDetails.homepage) {
-        homepageLink.href = movieDetails.homepage;
+        homepageLink.href = movieDetails.homepage; // adds link the button, no need to add event listner
     } else {
         homepageLink.style.display = 'none'; // Hide the link if homepage is not available
     }
@@ -167,7 +171,66 @@ async function displayMovieDetails(){
  */
 async function displayShowDetails() {
   show_id = getId();
-  console.log(show_id);
+  const showDetails = await fetchAPIData(`tv/${show_id}`);
+  console.log(showDetails);
+
+  // updating the html tags 
+  const tvDetailsContainer = document.getElementById('show-details');
+
+  // Update image source
+  const posterImage = showDetails.poster_path
+  ? `https://image.tmdb.org/t/p/w500${showDetails.poster_path}`
+  : 'images/no-image.jpg';
+  tvDetailsContainer.querySelector('.card-img-top').src = posterImage;
+
+  // updating the title
+  tvDetailsContainer.querySelector('h2').textContent = showDetails.name;
+
+  // updating the rating 
+  tvDetailsContainer.querySelector('p').innerHTML = ` <i class="fas fa-star text-primary"></i>
+  ${showDetails.vote_average.toFixed(1)} / 10`;
+
+  // updating release date
+  tvDetailsContainer.querySelector('.text-muted').textContent = `Release Date: ${showDetails.first_air_date}`;
+
+  // update overview
+  tvDetailsContainer.querySelector('p:last-of-type').textContent = showDetails.overview;
+
+  // update genres
+  const genresList = document.querySelector('.list-group');
+  genresList.innerHTML = ''; // clearing the list
+  showDetails.genres.forEach((genre)=>{
+    const li = document.createElement('li');
+    li.textContent = genre.name;
+    genresList.appendChild(li);
+  });
+  
+  //updating the homepage link (if available)
+  const homepageLink = tvDetailsContainer.querySelector('.btn');
+  if(showDetails.homepage){
+    homepageLink.href = showDetails.homepage; // adds link to button no need to add the event listner
+  } else {
+    homepageLink.style.display = 'none';
+  }
+
+  // Number Of Episodes, Last Episode To Air, status
+  const detailsBottom = tvDetailsContainer.querySelector('.details-bottom');
+  detailsBottom.querySelector('li:nth-child(1)').textContent = `No Of Episodes: ${showDetails.number_of_episodes.toLocaleString()}`;
+  detailsBottom.querySelector('li:nth-child(2)').textContent = `Last Episode To Air: ${showDetails.last_episode_to_air.name.toLocaleString()}`;
+  detailsBottom.querySelector('li:nth-child(3)').textContent = `Status: ${showDetails.status}`;
+
+  // Update production companies
+  const productionCompanies = tvDetailsContainer.querySelector('.list-group2');
+  productionCompanies.textContent = ''; // Clear existing production companies
+  showDetails.production_companies.forEach((company) => {
+      const div = document.createElement('div');
+
+      div.textContent = company.name;
+      productionCompanies.appendChild(div);
+  });
+
+
+
 }
 
 // Fretch data from the TMDB 
