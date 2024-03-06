@@ -1,3 +1,6 @@
+//importing youtube js
+import './youtube';
+
 // making routers from scratch
 // 
 const global =  {
@@ -128,6 +131,25 @@ async function displayMovieDetails(){
     // Update overview
     movieDetailsContainer.querySelector('p:last-of-type').textContent = movieDetails.overview;
 
+    // show trailers
+    /*
+    const trailerContainer = document.getElementById('trailer-container');
+    const trailerKey = getMovieTrailerKey();
+    if(typeof trailerKey !== String){
+      const trailerEmbedUrl = `https://www.youtube.com/watch?v=${trailerKey}`;
+
+      // construct an iframe to show another html( ie. video) inside the details page
+      const iframe = document.createElement('iframe');
+      iframe.src = trailerEmbedUrl;
+      iframe.width = '100%';
+      iframe.height = '400';
+      iframe.allowFullscreen = true;
+      trailerContainer.appendChild(iframe);
+    } else {
+      trailerContainer.textContent = 'Trailer not available.';
+    }
+*/
+
     // Update genres
     const genresList = movieDetailsContainer.querySelector('.list-group');
     genresList.innerHTML = ''; // Clear existing genres
@@ -162,6 +184,20 @@ async function displayMovieDetails(){
         productionCompanies.appendChild(div);
     });
     
+}
+//trailers
+/**
+ * gets the key for the videos on the youtube
+ */
+async function getMovieTrailerKey(){
+    const movie_id = getId() ;
+    const trailers = await fetchAPIData(`movie/${movie_id}/videos`);
+    if(trailers.results && trailers.results.length > 0){
+      let last = trailers.results.length-1;
+    return trailers.results[last].key;
+    } else {
+      return 'Trailer Not Available';
+    }
 }
 
 // tv show details 
@@ -233,6 +269,33 @@ async function displayShowDetails() {
 
 }
 
+/**
+ * This function fetches data using API token instead of keys.
+ * @param {*} endpoint 
+ * @returns 
+ */
+async function fetchAPIData_Token(endpoint){
+  const API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmQ2ZDBkY2U1MDM3ZDFkMTE5MTNiYzEwMzYzZDg4NSIsInN1YiI6IjY1ZGNlOGQyMzQ0YThlMDE4NzM2YjlhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uVG0MxQzMwQP89aTQ7TyonvGeEMLBFwDn2Ed4XsoHds';
+  const API_URl = 'https://api.themoviedb.org/3/';
+  // adding the spinning effect
+  showSpinner();
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmQ2ZDBkY2U1MDM3ZDFkMTE5MTNiYzEwMzYzZDg4NSIsInN1YiI6IjY1ZGNlOGQyMzQ0YThlMDE4NzM2YjlhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uVG0MxQzMwQP89aTQ7TyonvGeEMLBFwDn2Ed4XsoHds'
+    }
+  };
+
+  const response = await fetch(`${API_URL}${endpoint}?language=en-US`,options);
+  const data = await response.json();
+
+    //removing the spinning effect
+    hideSpinner();
+
+    return data;
+}
+
 // Fretch data from the TMDB 
 /**
  * If this was a production website we should not keep the key here
@@ -248,7 +311,7 @@ async function displayShowDetails() {
 async function fetchAPIData(endpoint){
     const API_KEY = 'bfd6d0dce5037d1d11913bc10363d885'; 
     const API_URL = 'https://api.themoviedb.org/3/'; // append the required string at the end to make approprate request.
-
+    
     // adding the spinning effect
     showSpinner();
 

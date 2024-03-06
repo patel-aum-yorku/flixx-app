@@ -250,6 +250,9 @@ section h2 {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
+#trailer-container {
+  margin-top: 20px;
+}
 /* Search */
 .search {
   padding: 60px;
