@@ -1,5 +1,3 @@
-//importing youtube js
-//import './youtube';
 
 // making routers from scratch
 // 
@@ -130,24 +128,10 @@ async function displayMovieDetails(){
 
     // Update overview
     movieDetailsContainer.querySelector('p:last-of-type').textContent = movieDetails.overview;
-
+    
     // show trailers
-    /*
-    const trailerContainer = document.getElementById('trailer-container');
-    const trailerKey = getMovieTrailerKey();
-    if(typeof trailerKey !== String){
-      const trailerEmbedUrl = `https://www.youtube.com/watch?v=${trailerKey}`;
-
-      // construct an iframe to show another html( ie. video) inside the details page
-      const iframe = document.createElement('iframe');
-      iframe.src = trailerEmbedUrl;
-      iframe.width = '100%';
-      iframe.height = '400';
-      iframe.allowFullscreen = true;
-      trailerContainer.appendChild(iframe);
-    } else {
-      trailerContainer.textContent = 'Trailer not available.';
-    }
+    /*const trailerKey = getMovieTrailerKey();
+    initializeYouTubeAPI(trailerKey);
 */
 
     // Update genres
@@ -347,6 +331,7 @@ function highLightActiveLink(){
         }
     })
 }
+export const trailerKey = getMovieTrailerKey();
 
 // Init app 
 function init() {
