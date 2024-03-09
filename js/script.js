@@ -1,4 +1,5 @@
 
+//import './youtube'
 // making routers from scratch
 // 
 const global =  {
@@ -105,8 +106,10 @@ async function displayPopularMovies(){
 async function displayMovieDetails(){
     const movie_id = getId() ;
     const movieDetails = await fetchAPIData(`movie/${movie_id}`);
-    console.log(movieDetails);
+    //console.log(movieDetails);
     //updating the html tags
+    displayBackgroundImage('movie',movieDetails.backdrop_path);
+
     // Update HTML elements with movie details
     const movieDetailsContainer = document.getElementById('movie-details');
 
@@ -130,9 +133,10 @@ async function displayMovieDetails(){
     movieDetailsContainer.querySelector('p:last-of-type').textContent = movieDetails.overview;
     
     // show trailers
-    /*const trailerKey = getMovieTrailerKey();
+    /*
+    const trailerKey = getMovieTrailerKey();
     initializeYouTubeAPI(trailerKey);
-*/
+    */
 
     // Update genres
     const genresList = movieDetailsContainer.querySelector('.list-group');
@@ -169,20 +173,7 @@ async function displayMovieDetails(){
     });
     
 }
-//trailers
-/**
- * gets the key for the videos on the youtube
- */
-async function getMovieTrailerKey(){
-    const movie_id = getId() ;
-    const trailers = await fetchAPIData(`movie/${movie_id}/videos`);
-    if(trailers.results && trailers.results.length > 0){
-      let last = trailers.results.length-1;
-    return trailers.results[last].key;
-    } else {
-      return 'Trailer Not Available';
-    }
-}
+
 
 // tv show details 
 /**
@@ -192,7 +183,8 @@ async function getMovieTrailerKey(){
 async function displayShowDetails() {
   show_id = getId();
   const showDetails = await fetchAPIData(`tv/${show_id}`);
-  console.log(showDetails);
+  //console.log(showDetails);
+  displayBackgroundImage('show',showDetails.backdrop_path);
 
   // updating the html tags 
   const tvDetailsContainer = document.getElementById('show-details');
@@ -252,7 +244,100 @@ async function displayShowDetails() {
 
 
 }
+// Display slider Movies
+/**
+ * This function shows slider animation for the movies. It uses an 
+ * API to fetch the animation
+ */
+async function displaySlider() {
+  const {results} = await fetchAPIData('movie/now_playing');
+  console.log(results);
 
+  results.forEach((movie)=>{
+    const div = document.createElement('div');
+    div.classList.add('swiper-slide');
+    div.innerHTML = `
+        <a href="movie-details.html?id=${movie.id}">
+          <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
+        </a>
+        <h4 class="swiper-rating">
+          <i class="fas fa-star text-secondary"></i> ${movie.vote_average.toFixed(1)} / 10
+        </h4>
+    `;
+
+    document.querySelector('.swiper-wrapper').appendChild(div);
+
+    initSwiper();
+  });
+}
+// helper fucntion for the slider funciton
+function initSwiper() {
+  const swiper = new Swiper('.swiper',{
+    slidePerView: 1,
+    spaceBetween: 30,
+    freeMode: true,
+    loop: true,
+    autoplay:{
+        delay: 4000,
+        disableOnInteraction: false
+    },
+    breakpoints: {
+      500: {
+        slidesPerView : 2
+      },
+      700: {
+        slidesPerView : 3
+      },
+      1200: {
+        slidesPerView : 4
+      },
+
+    }
+  });
+}
+
+//Background Image 
+/**
+ * This fucntion helps to display background image
+ */
+function displayBackgroundImage(type,backgroundPath){
+      const overlayDiv = document.createElement('div');
+      overlayDiv.style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${backgroundPath})`;
+      overlayDiv.style.backgroundSize = 'cover';
+      overlayDiv.style.backgroundPosition = 'center';
+      overlayDiv.style.backgroundRepeat = 'no-repeat';
+      overlayDiv.style.height ='100vh';
+      overlayDiv.style.width = '100vw';
+      overlayDiv.style.position = 'absolute';
+      overlayDiv.style.top = '0';
+      overlayDiv.style.left = '0';
+      overlayDiv.style.zIndex = '-1';
+      overlayDiv.style.opacity = '0.1';
+
+      if(type === 'movie'){
+        document.querySelector('#movie-details').appendChild(overlayDiv);
+      } else {
+        document.querySelector('#show-details').appendChild(overlayDiv);
+      }
+}   
+
+//trailers
+/**
+ * gets the key for the videos on the youtube
+
+async function getMovieTrailerKey(){
+  const movie_id = getId() ;
+
+  const trailers = await fetchAPIData_Token(`movie/${movie_id}/videos`);
+  
+  if(trailers.results && trailers.results.length > 0){
+    let last = trailers.results.length-1;
+  return trailers.results[last].key;
+  } else {
+    return 'Trailer Not Available';
+  }
+}
+*/
 /**
  * This function fetches data using API token instead of keys.
  * @param {*} endpoint 
@@ -260,14 +345,14 @@ async function displayShowDetails() {
  */
 async function fetchAPIData_Token(endpoint){
   const API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmQ2ZDBkY2U1MDM3ZDFkMTE5MTNiYzEwMzYzZDg4NSIsInN1YiI6IjY1ZGNlOGQyMzQ0YThlMDE4NzM2YjlhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uVG0MxQzMwQP89aTQ7TyonvGeEMLBFwDn2Ed4XsoHds';
-  const API_URl = 'https://api.themoviedb.org/3/';
+  const API_URL = 'https://api.themoviedb.org/3/';
   // adding the spinning effect
   showSpinner();
   const options = {
     method: 'GET',
     headers: {
       accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmQ2ZDBkY2U1MDM3ZDFkMTE5MTNiYzEwMzYzZDg4NSIsInN1YiI6IjY1ZGNlOGQyMzQ0YThlMDE4NzM2YjlhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uVG0MxQzMwQP89aTQ7TyonvGeEMLBFwDn2Ed4XsoHds'
+     Authorization: `Bearer ${API_TOKEN}` 
     }
   };
 
@@ -331,14 +416,13 @@ function highLightActiveLink(){
         }
     })
 }
-export const trailerKey = getMovieTrailerKey();
 
 // Init app 
 function init() {
     switch(global.currentPage) {
         case '/':
         case '/index.html':
-
+            displaySlider();
             displayPopularMovies();
             console.log('Home');
             break;
@@ -361,5 +445,6 @@ function init() {
     }
     highLightActiveLink();
 }
+
 
 document.addEventListener('DOMContentLoaded', init);
